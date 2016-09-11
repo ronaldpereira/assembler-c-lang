@@ -1,0 +1,206 @@
+WOMBAT 2 INSTRUCTIONS
+27 possible instructions (2/3 = 18 instructions)
+16 bits instructions
+8 bits first line
+8 bits next line
+-> unused bits must be translated to 0's
+
+---INSTRUCTIONS CODES AND FORMATS:
+
+00000 = 0
+exit - exits the program
+opcode - 5 bits
+3 unused bits
+8 unused bits
+
+00001 = 1
+loadi - load immediate
+opcode - 5 bits
+Rdest - 3 bits
+memory address - 8 bits
+
+00010 = 2
+storei - store immediate
+opcode - 5 bits
+Rsrc - 3 bits
+memory address - 8 bits
+
+00011 = 3
+add - adds Rdest by the Rsrc1
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+00100 = 4
+subtract - subtracts the Rdest by the Rsrc1
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+00101 = 5
+multiply - multiplies the Rdest by the Rsrc1
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+00110 = 6
+divide - divides the Rdest by the Rsrc1
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+00111 = 7
+jump - jumps unconditionally
+opcode - 5 bits
+3 bits unused
+memory address - 8 bits
+
+01000 = 8
+jmpz - jumps if Rsrc1 is zero
+opcode - 5 bits
+Rsrc1 - 3 bits
+memory address - 8 bits
+
+01001 = 9
+jmpn - jumps if Rsrc1 is not zero
+opcode - 5 bits
+Rsrc1 - 3 bits
+memory address - 8 bits
+
+010010 = 10
+move - moves the Rsrc1 content to Rdest
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+01011 = 11
+load - loads the Rsrc1 address value to Rdest
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+5 bits unused
+
+01100 = 12
+store - stores the Rsrc1 in the Rsrc2 address value
+opcode - 5 bits
+Rsrc1 - 3 bits
+Rsrc2 - 3 bits
+5 bits unused
+
+01101 = 13
+loadc - (???)
+opcode - 5 bits
+Reg - 3 bits
+signed value - 8 bits
+
+01110 = 14
+clear - clears the Rdest
+opcode - 5 bits
+Rdest - 3 bits
+8 bits unused
+
+01111 = 15
+moveSp - makes the stack pointer to be equal to the immediate value
+opcode - 5 bits
+3 bits unused
+signed value - 8 bits
+
+10000 = 16
+slt - set less than = Set register Rdest to 1 if register Rsrc1 is less than Rsrc2 and to be 0 otherwise.
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+Rsrc2 - 3 bits
+2 bits unused
+
+10001 = 17
+call - call of a procedure or function
+opcode - 5 bits
+3 bits unused
+memory address - 8 bits
+
+10010 = 18
+loadSp - loads an immediate value on the stack pointer
+opcode - 5 bits
+Sp register - 3 bits
+memory address - 8 bits
+
+10011 = 19
+storeSp - stores the stack pointer register
+opcode - 5 bits
+Sp register - 3 bits
+memory address - 8 bits
+
+10100 = 20
+ret - return to procedure on the top of stack pointer register (sp)
+opcode - 5 bits
+11 bits unused
+
+10101 = 21
+loadRa - load the immediate value on the accumulator
+opcode - 5 bits
+3 bits unused
+unsigned value (absolute memory position) - 8 bits
+
+10110 = 22
+storeRa - store the accumulator register on the memory
+opcode - 5 bits
+3 bits unused
+unsigned value (absolute memory position) - 8 bits
+
+10111 = 23
+addi - add immediate
+opcode - 5 bits
+Rdest - 3 bits
+signed 5 (???) - 8 bits
+
+11000 = 24
+sgt - set greater than = Set register Rdest to 1 if register Rsrc1 is greater than Rsrc2 and to be 0 otherwise.
+opcode - 5 bits
+Rdest - 3 bits
+Rsrc1 - 3 bits
+Rsrc2 - 3 bits
+2 bits unused
+
+11001 = 25
+seq - set equal = Set register Rdest to 1 if register Rsrc1 equals Rsrc2 and to be 0 otherwise.
+opcode - 5 bits
+Rdest - 3 bits
+Rsc1 - 3 bits
+Rsrc2 - 3 bits
+2 bits unused
+
+11010 = 26
+jmpp - jump (???)
+opcode - 5 bits
+reg - 3 bits
+address - 8 bits
+
+
+--- MACHINE LANGUAGE MODEL:
+
+DEPTH = 256;
+WIDTH = 8;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = BIN;
+CONTENT
+BEGIN
+
+00        :  00001011;              -- loadi R3 negOne ; load -1 -> R3 | loadi R3 negOne ; load -1 -> R3 | loadi R3 negOne ; load -1 -> R3
+01        :  00101100;              --
+02        :  00001000;              -- loadi R0 IO ; read n -> R0 | loadi R0 IO ; read n -> R0 | loadi R0 IO ; read n -> R0
+03        :  11111110;              --
+
+[***LOTS OF CODE HERE***]
+
+30        :  00000000;              -- one: .data 2 1 ; constant 1 | one: .data 2 1 ; constant 1 | one: .data 2 1 ; constant 1
+31        :  00000001;              --
+[32..FF]:  00000000;              --
+END;
+
+negOne:	.data 2 -1	; negOne: constant -1 (is kinda like #define in C/C++)
