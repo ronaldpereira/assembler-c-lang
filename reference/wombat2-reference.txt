@@ -176,9 +176,9 @@ Rsrc2 - 3 bits
 2 bits unused
 
 11010 = 26
-jmpp - jump (???)
+jmpp - jump if the memory address is equal do Rsrc1
 opcode - 5 bits
-reg - 3 bits
+Rsrc1 - 3 bits
 address - 8 bits
 
 
