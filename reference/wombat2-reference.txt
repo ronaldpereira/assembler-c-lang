@@ -93,9 +93,9 @@ Rsrc2 - 3 bits
 5 bits unused
 
 01101 = 13
-loadc - (???)
+loadc - loads a constant value in Rdest
 opcode - 5 bits
-Reg - 3 bits
+Rdest - 3 bits
 signed value - 8 bits
 
 01110 = 14
