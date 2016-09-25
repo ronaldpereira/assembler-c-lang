@@ -50,5 +50,9 @@ int main(int argc, char* argv[])
 
 	fprintf(stdout, "\n***Program Outputs***\nFile '%s' assembled sucessfully into '%s'.\n", argv[1], argv[2]);
 
+	free(binary);
+	fclose(input);
+	fclose(output);
+
 	return 0;
 }
