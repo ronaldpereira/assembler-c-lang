@@ -35,14 +35,14 @@ int main(int argc, char* argv[])
 
 		for(j = 0; j < 8; j++)
 			fprintf(output, "%d", binary[j]);
-		fprintf(output, ":\n");
+		fprintf(output, "  :\n");
 
 		// Aqui vão ficar as instruções de leitura e tradução do input
 	}
 
 	fprintf(output, "END;\n");
 
-	fprintf(stdout, "\n***Program Outputs***\nFile '%s' assembled sucessfully into '%s'.\n", argv[1], argv[2]);
+	fprintf(stdout, "\n***PROGRAM OUTPUTS***\nFile '%s' assembled sucessfully into '%s'.\n\n", argv[1], argv[2]);
 
 	free(binary);
 	fclose(input);
