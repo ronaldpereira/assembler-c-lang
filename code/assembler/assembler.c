@@ -20,31 +20,25 @@ int main(int argc, char* argv[])
 {
 	FILE *input, *output;
 	bool *binary;
-	int dec;
-	int i;
-
-	binary = (bool*) calloc(8,sizeof(bool));
-
-	printf("Insira um numero inteiro:\n>");
-	scanf("%d", &dec);
-
-	binaryConversion(binary, dec);
-
-	for(i = 0; i < 8; i++)
-		printf("%d", binary[i]);
-
+	int i, j;
 
 	input = fopen(argv[1], "r");
 	output = fopen(argv[2], "w+r");
 
+	binary = (bool*) calloc(8,sizeof(bool));
 
-
-	// Input fscanf
-
-	//Output fprint
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
 
-	//Assembly impression
+	for(i = 0; i != 256; i++)
+	{
+		binaryConversion(binary, i);
+
+		for(j = 0; j < 8; j++)
+			fprintf(output, "%d", binary[j]);
+		fprintf(output, ":\n");
+
+		// Aqui vão ficar as instruções de leitura e tradução do input
+	}
 
 	fprintf(output, "END;\n");
 
