@@ -10,7 +10,7 @@
 ; R2 holds the sum so far
 ; R3 holds the constant -1 for decrementing m
 	
-        loadi R3 negOne	; load -1 -> R3
+    loadi R3 negOne	; load -1 -> R3
 	loadi R0 IO	; read n -> R0
 	loadi R1 IO	; read m -> R1
 	jmpn R1 _fixSign	; if m < 0 jump to fixSign

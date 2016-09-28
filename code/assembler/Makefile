@@ -14,4 +14,7 @@ clean:
 	@echo "\nThe assembler executable has been sucessfully removed\n"
 
 test:
-	make all && ./assembler.exe $(INPUTPATH) $(OUTPUTPATH) && make clean
+	./assembler.exe $(INPUTPATH) $(OUTPUTPATH)
+
+compile:
+	make clean && make all
