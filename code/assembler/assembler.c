@@ -3,6 +3,12 @@
 #include <stdbool.h>
 #include <string.h>
 
+typedef struct Address
+{
+	char Label[50];
+	int Offset; // Valor do offset no arquivo output
+} Address;
+
 bool *binaryConversion(bool *bin, int dec)
 {
 	int i;
@@ -20,8 +26,21 @@ bool *binaryTwoComplement(bool *comp, int dec)
 {
 	int i, flag = 0;
 
+	if(dec == 1) // Se dec for -1, então o algoritmo abaixo não se aplica para transformação em complemento de dois
+	{
+		for(i = 0; i < 8; i++)
+		{
+			comp[i] = 1;
+		}
+
+		return comp;
+	}
+
+	dec = dec - 1; //Complemento começa em -1
+
 	binaryConversion(comp, dec);
 
+	// Algoritmo de transformação em complemento de dois
 	for(i = 7; i >= 0; i--)
 	{
 		if(comp[i] == 1 && flag == 0)
@@ -107,23 +126,24 @@ int main(int argc, char* argv[])
 
 				if(strcmp(token, "exit") == 0)
 				{
-					fprintf(output, "00000000\n");
+					fprintf(output, "00000000;\n");
 					pc++;
 					binaryConversion(binary, pc);
 					for(j = 0; j < 8; j++)
 						fprintf(output, "%d", binary[j]);
 					fprintf(output, "  :  ");
-					fprintf(output, "00000000\n");
+					fprintf(output, "00000000;\n");
 				}
 
 				else if(strcmp(token, "loadi") == 0)
 				{
 					fprintf(output, "00001");
+
+					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '8') // É um registrador válido (R0 até R8)
 					{
 						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						printf("%d\n", dec);
 						binaryConversion(binary, dec);
 						for(j = 5; j < 8; j++)
 						{
@@ -137,8 +157,9 @@ int main(int argc, char* argv[])
 						fprintf(output, "  :  ");
 					}
 
+					//Leitura do imediato
 					token = strtok(NULL, " \t");
-					if(strcmp(token, "IO") == 0)
+					if(strcmp(token, "IO") == 0) // Endereço de Entrada de dados
 						fprintf(output, "11111110;\n");
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
@@ -152,60 +173,204 @@ int main(int argc, char* argv[])
 						fprintf(output, ";\n");
 					}
 
+					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
+					{
+						for(j = 0; j < (int)(strlen(token)-1); j++)
+						{
+							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
+						}
+						token[j] = '\0';
+						dec = atoi(token);
+						binaryTwoComplement(binary, dec);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, ";\n");
+					}
+					/*
 					else // É qualquer outro tipo de dado (pseudoinstrução .data)
 					{
 
 					}
+					*/
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "storei") == 0)
 				{
+					fprintf(output, "00010");
 
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '8') // É um registrador válido (R0 até R8)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
+					//Leitura do imediato
+					token = strtok(NULL, " \t");
+					if(strcmp(token, "IO") == 0) // Endereço de Entrada de dados
+						fprintf(output, "11111110;\n");
+
+					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 0; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+					}
+
+					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
+					{
+						for(j = 0; j < (int)(strlen(token)-1); j++)
+						{
+							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
+						}
+						token[j] = '\0';
+						dec = atoi(token);
+						binaryTwoComplement(binary, dec);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, ";\n");
+					}
+					/*
+					else // É qualquer outro tipo de dado (pseudoinstrução .data)
+					{
+
+					}
+					*/
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "add") == 0)
 				{
-
+					fprintf(output, "00011");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "subtract") == 0)
 				{
-
+					fprintf(output, "00100");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "multiply") == 0)
 				{
-
+					fprintf(output, "00101");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "divide") == 0)
 				{
-
+					fprintf(output, "00110");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "jump") == 0)
 				{
-
+					fprintf(output, "00111");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "jmpz") == 0)
 				{
-
+					fprintf(output, "01000");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "jmpn") == 0)
 				{
-
+					fprintf(output, "01001");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "move") == 0)
 				{
-
+					fprintf(output, "01010");
 				}
 
-				else if(strcmp(token, "") == 0)
+				else if(strcmp(token, "load") == 0)
 				{
+					fprintf(output, "01011");
+				}
 
+				else if(strcmp(token, "store") == 0)
+				{
+					fprintf(output, "01100");
+				}
+
+				else if(strcmp(token, "loadc") == 0)
+				{
+					fprintf(output, "01101");
+				}
+
+				else if(strcmp(token, "clear") == 0)
+				{
+					fprintf(output, "01110");
+				}
+
+				else if(strcmp(token, "moveSp") == 0)
+				{
+					fprintf(output, "01111");
+				}
+
+				else if(strcmp(token, "slt") == 0)
+				{
+					fprintf(output, "10000");
+				}
+
+				else if(strcmp(token, "call") == 0)
+				{
+					fprintf(output, "10001");
+				}
+
+				else if(strcmp(token, "loadSp") == 0)
+				{
+					fprintf(output, "10010");
+				}
+
+				else if(strcmp(token, "storeSp") == 0)
+				{
+					fprintf(output, "10011");
+				}
+
+				else if(strcmp(token, "ret") == 0)
+				{
+					fprintf(output, "10100");
+				}
+
+				else if(strcmp(token, "loadRa") == 0)
+				{
+					fprintf(output, "10101");
+				}
+
+				else if(strcmp(token, "storeRa") == 0)
+				{
+					fprintf(output, "10110");
+				}
+
+				else if(strcmp(token, "addi") == 0)
+				{
+					fprintf(output, "10111");
+				}
+
+				else if(strcmp(token, "sgt") == 0)
+				{
+					fprintf(output, "11000");
+				}
+
+				else if(strcmp(token, "seq") == 0)
+				{
+					fprintf(output, "11001");
+				}
+
+				else if(strcmp(token, "jmpp") == 0)
+				{
+					fprintf(output, "11010");
 				}
 			}
 		}
@@ -215,10 +380,6 @@ int main(int argc, char* argv[])
 
 	fprintf(output, "END;\n");
 
-	fprintf(stdout, "\n***PROGRAM OUTPUTS***\nFile '%s' assembled sucessfully into '%s'.\n\n", argv[1], argv[2]);
-
-	free(binary);
-	free(line);
 	fclose(input);
 	fclose(output);
 
