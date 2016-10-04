@@ -1,5 +1,5 @@
-loadi R3 -1
+loadi R3 24
 storei R2 IO
 loadi R0 IO
-storei R8 24
+storei R7 24
 exit

@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '8') // É um registrador válido (R0 até R8)
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R8)
 					{
 						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
 						binaryConversion(binary, dec);
@@ -164,9 +164,9 @@ int main(int argc, char* argv[])
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						dec = atoi(token); // Transformação de string para inteiro
 						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
+						for(j = 0; j < 8; j++)
 						{
 							fprintf(output, "%d", binary[j]);
 						}
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '8') // É um registrador válido (R0 até R8)
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R8)
 					{
 						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
 						binaryConversion(binary, dec);
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						dec = atoi(token); // Transformação de string para inteiro
 						binaryConversion(binary, dec);
 						for(j = 0; j < 8; j++)
 						{
@@ -256,6 +256,25 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "add") == 0)
 				{
 					fprintf(output, "00011");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R8)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
 				}
 
 				else if(strcmp(token, "subtract") == 0)
