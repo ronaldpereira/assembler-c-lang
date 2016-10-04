@@ -6,4 +6,8 @@ add R1 R7
 subtract R1 R7
 multiply R1 R7
 divide R1 R7
+move R1 R7
+load R1 R7
+store R1 R7
+slt R1 R7 R5
 exit
