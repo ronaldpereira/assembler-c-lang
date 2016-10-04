@@ -586,7 +586,7 @@ int main(int argc, char* argv[])
 
 				else if(strcmp(token, "call") == 0)
 				{
-					fprintf(output, "10001");
+					fprintf(output, "10001;\n");
 				}
 
 				else if(strcmp(token, "loadSp") == 0)
@@ -601,7 +601,13 @@ int main(int argc, char* argv[])
 
 				else if(strcmp(token, "ret") == 0)
 				{
-					fprintf(output, "10100");
+					fprintf(output, "10100000;\n");
+
+					pc++;
+					binaryConversion(binary, pc);
+					for(j = 0; j < 8; j++)
+						fprintf(output, "%d", binary[j]);
+					fprintf(output, "  :  00000000;\n");
 				}
 
 				else if(strcmp(token, "loadRa") == 0)
