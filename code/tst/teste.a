@@ -1,5 +1,7 @@
-loadi R3 24
+loadi R3 -1
 storei R2 IO
 loadi R0 IO
 storei R7 24
+add R1 R7
+subtract R1 R7
 exit
