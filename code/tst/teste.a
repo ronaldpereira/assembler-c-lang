@@ -4,4 +4,6 @@ loadi R0 IO
 storei R7 24
 add R1 R7
 subtract R1 R7
+multiply R1 R7
+divide R1 R7
 exit

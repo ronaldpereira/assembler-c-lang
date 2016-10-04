@@ -329,11 +329,73 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "multiply") == 0)
 				{
 					fprintf(output, "00101");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, "00000;\n");
+					}
 				}
 
 				else if(strcmp(token, "divide") == 0)
 				{
 					fprintf(output, "00110");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, "00000;\n");
+					}
 				}
 
 				else if(strcmp(token, "jump") == 0)
@@ -354,6 +416,37 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "move") == 0)
 				{
 					fprintf(output, "01010");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, "00000;\n");
+					}
 				}
 
 				else if(strcmp(token, "load") == 0)
