@@ -618,7 +618,7 @@ int main(int argc, char* argv[])
 					}
 				}
 
-				else if(strcmp(token, "call") == 0)
+				else if(strcmp(token, "call") == 0) // Precisa de label
 				{
 					fprintf(output, "10001;\n");
 				}
@@ -679,6 +679,54 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "storeSp") == 0)
 				{
 					fprintf(output, "10011");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  ");
+					}
+
+					//Leitura do imediato
+					token = strtok(NULL, " \t");
+					if(strcmp(token, "IO") == 0) // Endereço de Entrada de dados
+						fprintf(output, "11111110;\n");
+
+					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
+					{
+						dec = atoi(token); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 0; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+					}
+
+					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
+					{
+						for(j = 0; j < (int)(strlen(token)-1); j++)
+						{
+							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
+						}
+						token[j] = '\0';
+						dec = atoi(token);
+						binaryTwoComplement(binary, dec);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, ";\n");
+					}
 				}
 
 				else if(strcmp(token, "ret") == 0)
