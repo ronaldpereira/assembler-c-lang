@@ -651,7 +651,41 @@ int main(int argc, char* argv[])
 
 				else if(strcmp(token, "storeRa") == 0)
 				{
-					fprintf(output, "10110");
+					fprintf(output, "10110000;\n");
+
+					pc++;
+					binaryConversion(binary, pc);
+					for(j = 0; j < 8; j++)
+						fprintf(output, "%d", binary[j]);
+					fprintf(output, "  :  ");
+
+					//Leitura do imediato
+					token = strtok(NULL, " \t");
+
+					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
+					{
+						dec = atoi(token); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 0; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+					}
+
+					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
+					{
+						for(j = 0; j < (int)(strlen(token)-1); j++)
+						{
+							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
+						}
+						token[j] = '\0';
+						dec = atoi(token);
+						binaryTwoComplement(binary, dec);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, ";\n");
+					}
 				}
 
 				else if(strcmp(token, "addi") == 0)

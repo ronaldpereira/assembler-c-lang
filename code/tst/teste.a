@@ -14,4 +14,7 @@ ret
 loadRa -1
 loadRa -4
 loadRa 32
+storeRa -1
+storeRa -4
+storeRa 32
 exit
