@@ -112,24 +112,74 @@ bool *binaryTwoComplement(bool *comp, int dec)
 	return comp;
 }
 
+bool *binaryConversion16bits(bool *bin, int dec)
+{
+	int i;
+
+	for(i = 15; i >= 0; i--)
+	{
+		bin[i] = dec % 2;
+		dec /= 2;
+	}
+
+	return bin;
+}
+
+bool *binaryTwoComplement16bits(bool *comp, int dec)
+{
+	int i, flag = 0;
+
+	if(dec == 1) // Se dec for -1, então o algoritmo abaixo não se aplica para transformação em complemento de dois
+	{
+		for(i = 0; i < 16; i++)
+		{
+			comp[i] = 1;
+		}
+
+		return comp;
+	}
+
+	dec = dec - 1; //Complemento começa em -1
+
+	binaryConversion16bits(comp, dec);
+
+	// Algoritmo de transformação em complemento de dois
+	for(i = 15; i >= 0; i--)
+	{
+		if(comp[i] == 1 && flag == 0)
+			flag = 1;
+
+		else if(flag == 1)
+		{
+			if(comp[i] == 0)
+				comp[i] = 1;
+			else
+				comp[i] = 0;
+		}
+	}
+
+	return comp;
+}
+
+
 int main(int argc, char* argv[])
 {
 	FILE *input, *output;
 	bool *binary, *datavalue;
 	int pc, i, j, flag, dec;
 	char *line, *token, *value;
-  lista_t data, labels;
+  	lista_t data, labels;
 
 	input = fopen(argv[1], "r");
 	output = fopen(argv[2], "w+r");
 
 	binary = (bool*) calloc(8,sizeof(bool));
-	datavalue = (bool*) calloc(8,sizeof(bool));
+	datavalue = (bool*) calloc(16,sizeof(bool));
 	line = (char*) malloc(1000*sizeof(char));
 	token = (char*) malloc(50*sizeof(char));
 	value = (char*) malloc(50*sizeof(char));
-  aloca_lista(&data);
-  aloca_lista(&labels);
+  	aloca_lista(&data);
+  	aloca_lista(&labels);
 
 
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
@@ -176,8 +226,9 @@ int main(int argc, char* argv[])
 				//Salva o label em uma lista de label
         		adiciona_elemento(&labels, labels.ultima);
         		grava_elemento(labels.ultima, token, pc);
-				token = strtok(token, ":");
 				printf("Label = %s\n", token);
+				token = strtok(NULL, " \t");
+				goto _instruction;
 			}
 
 			else if(token[strlen(token)-1] == ':') // Identifica uma pseudoinstrução .data
@@ -198,7 +249,7 @@ int main(int argc, char* argv[])
 					if(value[0] >= '0' && value[0] <= '9') // É um imediato positivo válido
 					{
 						dec = atoi(value); // Transformação de string para inteiro
-						binaryConversion(datavalue, dec);
+						binaryConversion16bits(datavalue, dec);
 					}
 
 					else if(value[0] == '-' && value[1] >= '0' && value[1] <= '9')
@@ -209,32 +260,29 @@ int main(int argc, char* argv[])
 						}
 						value[j] = '\0';
 						dec = atoi(value);
-						binaryTwoComplement(datavalue, dec);
+						binaryTwoComplement16bits(datavalue, dec);
 					}
 
 					for(j = 0; j < 8; j++)
 						fprintf(output, "%d", datavalue[j]);
 					fprintf(output, ";\n");
 
-					for(j = 0; j < (atoi(token)-1); j++)
-					{
-						pc++;
-						binaryConversion(binary, pc);
-						for(i = 0; i < 8; i++)
-							fprintf(output, "%d", binary[i]);
-						fprintf(output, "  :  ");
+					pc++;
+					binaryConversion(binary, pc);
+					for(i = 0; i < 8; i++)
+						fprintf(output, "%d", binary[i]);
+					fprintf(output, "  :  ");
 
-						for(i = 0; i < 8; i++)
-							fprintf(output, "%d", datavalue[i]);
-						fprintf(output, ";\n");
-					}
+					for(i = 8; i < 16; i++)
+						fprintf(output, "%d", datavalue[i]);
+					fprintf(output, ";\n");
 				}
 			}
 
 			else
 			{
 				//Identifica uma instrução
-				printf("Instrução = %s\n", token);
+				_instruction: printf("Instrução = %s\n", token);
 				//If-elseif para cada instrução
 
 				if(strcmp(token, "exit") == 0)

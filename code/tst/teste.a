@@ -14,6 +14,7 @@ ret
 loadRa -1
 loadRa -4
 loadRa 32
+_marcador: loadi R3 -1
 storeRa -1
 storeRa -4
 storeRa 32
@@ -33,7 +34,7 @@ storeSp R1 32
 clear R1
 loadc R1 32
 exit
-_end: loadi R3 10
 negOne: .data 2 -1
 Twice: .data 2 2
-Pow: .data 2 23
+Pow: .data 2 975725574818
+_end: add R7 R4

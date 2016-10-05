@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O3
+CFLAGS = -Wall -Wextra -g -O0
 INPUTPATH = ../tst/teste.a
 OUTPUTPATH = ../tst/output.mif
 
