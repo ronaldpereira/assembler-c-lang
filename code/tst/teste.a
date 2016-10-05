@@ -24,4 +24,7 @@ seq R1 R7 R5
 moveSp -1
 moveSp -4
 moveSp 32
+loadSp R1 -1
+loadSp R1 -4
+loadSp R1 32
 exit
