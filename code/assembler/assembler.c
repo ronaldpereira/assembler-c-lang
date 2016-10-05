@@ -529,6 +529,24 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "clear") == 0)
 				{
 					fprintf(output, "01110");
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+					{
+						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+						binaryConversion(binary, dec);
+						for(j = 5; j < 8; j++)
+						{
+							fprintf(output, "%d", binary[j]);
+						}
+						fprintf(output, ";\n");
+						pc++;
+						binaryConversion(binary, pc);
+						for(j = 0; j < 8; j++)
+							fprintf(output, "%d", binary[j]);
+						fprintf(output, "  :  00000000;\n");
+					}
 				}
 
 				else if(strcmp(token, "moveSp") == 0)
