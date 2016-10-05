@@ -94,6 +94,21 @@ int main(int argc, char* argv[])
 				break;
 		}
 
+		if(line[0] == '\0') // Finaliza a escrita do output
+		{
+			printf("acabou\n");
+
+			binaryConversion(binary, pc);
+
+			fseek(output, -13, SEEK_CUR);
+
+			fprintf(output, "[");
+			for(i = 0; i < 8; i++)
+				fprintf(output, "%d", binary[i]);
+			fprintf(output, "..11111111]  :  00000000;\n");
+			pc = 255;
+		}
+
 		if(flag == 1)
 		{
 			token = strtok(line, " \t");
@@ -138,7 +153,7 @@ int main(int argc, char* argv[])
 					for(j = 0; j < 8; j++)
 						fprintf(output, "%d", datavalue[j]);
 					fprintf(output, ";\n");
-					
+
 					for(j = 0; j < (atoi(token)-1); j++)
 					{
 						pc++;
@@ -1069,7 +1084,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-
+		line[0] = '\0';
 		pc++;
 	}
 
