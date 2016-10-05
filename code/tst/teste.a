@@ -21,4 +21,7 @@ addi R1 3
 addi R1 -1
 sgt R1 R7 R5
 seq R1 R7 R5
+moveSp -1
+moveSp -4
+moveSp 32
 exit
