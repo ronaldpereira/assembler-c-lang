@@ -1027,7 +1027,7 @@ int main(int argc, char* argv[])
 					}
 				}
 
-				else if(strcmp(token, "jmpp") == 0)
+				else if(strcmp(token, "jmpp") == 0) // Precisa de label
 				{
 					fprintf(output, "11010");
 				}
