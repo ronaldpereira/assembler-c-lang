@@ -5,9 +5,63 @@
 
 typedef struct Address
 {
-	char Label[50];
+	char *Label;
 	int Offset; // Valor do offset no arquivo output
-} Address;
+} registro_t;
+
+typedef struct celula* apontador_t;
+
+typedef struct celula
+{
+  registro_t registro;
+  apontador_t frente;
+} celula_t;
+
+typedef struct lista
+{
+  apontador_t cabeca;
+  apontador_t ultima;
+} lista_t;
+
+void aloca_lista(lista_t* lista)
+{
+  lista->cabeca = calloc(1, sizeof(celula_t));
+  lista->cabeca->frente = NULL;
+  lista->ultima = lista->cabeca;
+}
+
+void adiciona_elemento(lista_t* lista, apontador_t apontado)
+{
+  apontador_t novo;
+  novo = calloc(1, sizeof(celula_t));
+  novo->frente = apontado->frente;
+  apontado->frente = novo;                                   //ALTERA PONTEIRO PRA ULTIMA
+  if(novo->frente == NULL)lista->ultima = novo;              //DEIXANDO SEMPRE APONTADA A ULTIMA NULL
+}
+
+void remove_Primeiro_elemento(lista_t* lista)
+{
+  apontador_t novo;
+  novo = lista->cabeca->frente;
+  lista->cabeca->frente = novo->frente;
+  if(novo->frente == NULL)lista->ultima = lista->cabeca;
+  free(novo);
+}
+
+void grava_elemento(apontador_t apontado, char* text, int value)
+{
+  apontado->registro.Label =  text;
+  apontado->registro.Offset = value;
+  //Outros
+}
+
+apontador_t procura_elemento(apontador_t apontado, char* text)
+{
+  while(strcmp(text, apontado->registro.Label) != 0){
+    apontado = apontado->frente;
+  }
+  return apontado;
+}
 
 bool *binaryConversion(bool *bin, int dec)
 {
@@ -64,6 +118,7 @@ int main(int argc, char* argv[])
 	bool *binary, *datavalue;
 	int pc, i, j, flag, dec;
 	char *line, *token, *value;
+  lista_t data, labels;
 
 	input = fopen(argv[1], "r");
 	output = fopen(argv[2], "w+r");
@@ -73,6 +128,9 @@ int main(int argc, char* argv[])
 	line = (char*) malloc(1000*sizeof(char));
 	token = (char*) malloc(50*sizeof(char));
 	value = (char*) malloc(50*sizeof(char));
+  aloca_lista(&data);
+  aloca_lista(&labels);
+
 
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
 
@@ -116,6 +174,8 @@ int main(int argc, char* argv[])
 			if(token[0] == '_') // Identifica um Label
 			{
 				//Salva o label em uma lista de label
+        		adiciona_elemento(&labels, labels.ultima);
+        		grava_elemento(labels.ultima, token, pc);
 				token = strtok(token, ":");
 				printf("Label = %s\n", token);
 			}
@@ -124,6 +184,8 @@ int main(int argc, char* argv[])
 			{
 				printf("Labeldata = %s\n", token);
 				//Salva o .data em um lista value
+        		adiciona_elemento(&data, data.ultima);
+        		grava_elemento(data.ultima, token, pc);
 				token = strtok(NULL, " \t");
 				printf(".data = %s\n", token);
 				if(strcmp(token, ".data") == 0)
@@ -240,7 +302,6 @@ int main(int argc, char* argv[])
 					/*
 					else // É qualquer outro tipo de dado (pseudoinstrução .data)
 					{
-
 					}
 					*/
 				}
@@ -299,7 +360,6 @@ int main(int argc, char* argv[])
 					/*
 					else // É qualquer outro tipo de dado (pseudoinstrução .data)
 					{
-
 					}
 					*/
 				}
