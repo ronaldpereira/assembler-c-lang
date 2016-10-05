@@ -33,3 +33,4 @@ storeSp R1 32
 clear R1
 loadc R1 32
 exit
+label: .data 4 -1

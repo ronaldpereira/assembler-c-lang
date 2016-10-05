@@ -61,16 +61,18 @@ bool *binaryTwoComplement(bool *comp, int dec)
 int main(int argc, char* argv[])
 {
 	FILE *input, *output;
-	bool *binary;
-	int pc, j, flag, dec;
-	char *line, *token;
+	bool *binary, *datavalue;
+	int pc, i, j, flag, dec;
+	char *line, *token, *value;
 
 	input = fopen(argv[1], "r");
 	output = fopen(argv[2], "w+r");
 
 	binary = (bool*) calloc(8,sizeof(bool));
+	datavalue = (bool*) calloc(8,sizeof(bool));
 	line = (char*) malloc(1000*sizeof(char));
 	token = (char*) malloc(50*sizeof(char));
+	value = (char*) malloc(50*sizeof(char));
 
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
 
@@ -100,23 +102,57 @@ int main(int argc, char* argv[])
 			{
 				//Salva o label em uma lista de label
 				token = strtok(token, ":");
-				printf("Struct = %s\n", token);
+				printf("Label = %s\n", token);
 			}
 
-			/*else if(token[strlen(token)] == ':') // Identifica uma pseudoinstrução .data
+			else if(token[strlen(token)-1] == ':') // Identifica uma pseudoinstrução .data
 			{
+				printf("Labeldata = %s\n", token);
 				//Salva o .data em um lista value
 				token = strtok(NULL, " \t");
+				printf(".data = %s\n", token);
 				if(strcmp(token, ".data") == 0)
 				{
 					token = strtok(NULL, " \t");
-					for(j = 0; j < atoi(token); j++)
-					{
+					printf("token = %s\n", token);
+					value = strtok(NULL, " \t");
+					printf("value = %s\n", value);
 
+					if(value[0] >= '0' && value[0] <= '9') // É um imediato positivo válido
+					{
+						dec = atoi(value); // Transformação de string para inteiro
+						binaryConversion(datavalue, dec);
+					}
+
+					else if(value[0] == '-' && value[1] >= '0' && value[1] <= '9')
+					{
+						for(j = 0; j < (int)(strlen(value)-1); j++)
+						{
+							value[j] = value[j+1]; //Shifta a string em uma posição à esquerda
+						}
+						value[j] = '\0';
+						dec = atoi(value);
+						binaryTwoComplement(datavalue, dec);
+					}
+
+					for(j = 0; j < 8; j++)
+						fprintf(output, "%d", datavalue[j]);
+					fprintf(output, ";\n");
+					
+					for(j = 0; j < (atoi(token)-1); j++)
+					{
 						pc++;
+						binaryConversion(binary, pc);
+						for(i = 0; i < 8; i++)
+							fprintf(output, "%d", binary[i]);
+						fprintf(output, "  :  ");
+
+						for(i = 0; i < 8; i++)
+							fprintf(output, "%d", datavalue[i]);
+						fprintf(output, ";\n");
 					}
 				}
-			}*/
+			}
 
 			else
 			{
