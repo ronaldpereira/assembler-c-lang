@@ -5,8 +5,8 @@
 
 typedef struct Address
 {
-	char *Label;
-	int Offset; // Valor do offset no arquivo output
+	char *Label; // Nome do label
+	int Pc; // Valor do Pc do label
 } registro_t;
 
 typedef struct celula* apontador_t;
@@ -51,7 +51,7 @@ void remove_Primeiro_elemento(lista_t* lista)
 void grava_elemento(apontador_t apontado, char* text, int value)
 {
   apontado->registro.Label =  text;
-  apontado->registro.Offset = value;
+  apontado->registro.Pc = value;
   //Outros
 }
 
