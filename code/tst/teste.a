@@ -17,4 +17,6 @@ loadRa 32
 storeRa -1
 storeRa -4
 storeRa 32
+addi R1 3
+addi R1 -1
 exit
