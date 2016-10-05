@@ -20,4 +20,5 @@ storeRa 32
 addi R1 3
 addi R1 -1
 sgt R1 R7 R5
+seq R1 R7 R5
 exit
