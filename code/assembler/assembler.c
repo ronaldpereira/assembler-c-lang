@@ -25,6 +25,11 @@ int main(int argc, char* argv[])
   	aloca_lista(&data);
   	aloca_lista(&label);
 
+	// Primeira Passada -> Ler do arquivo todo
+
+
+
+	// Segunda Passada -> Impressão do arquivo
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
 
 	pc = 0;
@@ -46,8 +51,6 @@ int main(int argc, char* argv[])
 
 		if(line[0] == '\0') // Finaliza a escrita do output
 		{
-			printf("acabou\n");
-
 			binaryConversion(binary, pc);
 
 			fseek(output, -13, SEEK_CUR); // Volta ao inicio da linha atual do output
