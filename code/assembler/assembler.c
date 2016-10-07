@@ -265,7 +265,6 @@ int main(int argc, char* argv[])
   	aloca_lista(&data);
   	aloca_lista(&label);
 
-
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
 
 	pc = 0;
@@ -277,11 +276,10 @@ int main(int argc, char* argv[])
 		fprintf(output, "  :  ");
 
 		flag = 0;
-		while(fscanf(input, "%[^\n]\n", line) != EOF)
+		while(fscanf(input, "%[^\n]\n", line) != EOF) // Lê a linha atual e detecta se a linha começa com um comentário ';'
 		{
 			printf("%s\n", line);
 			flag = 1;
-
 			if(line[0] != ';')
 				break;
 		}
