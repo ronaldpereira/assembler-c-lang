@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -O0
-INPUTPATH = ../tst/teste.a
+INPUTPATH = ../tst/input.a
 OUTPUTPATH = ../tst/output.mif
 
 all: assembler.exe
@@ -15,6 +15,9 @@ clean:
 
 test:
 	./assembler.exe $(INPUTPATH) $(OUTPUTPATH)
+
+gdb:
+	gdb assembler.exe
 
 compile:
 	make clean && make all

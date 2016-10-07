@@ -5,7 +5,7 @@
 
 typedef struct Address
 {
-	char *Label; // Nome do label
+	char Label[20]; // Nome do label
 	int Pc; // Valor do Pc do label
 } registro_t;
 
@@ -13,54 +13,63 @@ typedef struct celula* apontador_t;
 
 typedef struct celula
 {
-  registro_t registro;
-  apontador_t frente;
+	registro_t registro;
+	apontador_t frente;
 } celula_t;
 
 typedef struct lista
 {
-  apontador_t cabeca;
-  apontador_t ultima;
+	apontador_t cabeca;
+	apontador_t ultima;
 } lista_t;
 
 void aloca_lista(lista_t* lista)
 {
-  lista->cabeca = calloc(1, sizeof(celula_t));
-  lista->cabeca->frente = NULL;
-  lista->ultima = lista->cabeca;
+	lista->cabeca = (celula_t*) calloc(1, sizeof(celula_t));
+	lista->cabeca->frente = NULL;
+	lista->ultima = lista->cabeca;
 }
 
-void adiciona_elemento(lista_t* lista, apontador_t apontado)
+void adiciona_elemento(lista_t *lista, apontador_t pointer)
 {
-  apontador_t novo;
-  novo = calloc(1, sizeof(celula_t));
-  novo->frente = apontado->frente;
-  apontado->frente = novo;                                   //ALTERA PONTEIRO PRA ULTIMA
-  if(novo->frente == NULL)lista->ultima = novo;              //DEIXANDO SEMPRE APONTADA A ULTIMA NULL
+	apontador_t novo;
+
+	novo = (celula_t*) calloc(1, sizeof(celula_t));
+	novo->frente = pointer->frente;
+	pointer->frente = novo; //ALTERA PONTEIRO PRA ULTIMA
+	lista->ultima = novo; //DEIXANDO SEMPRE APONTADA A ULTIMA NULL
+}
+
+void grava_elemento(apontador_t pointer, char *text, int value)
+{
+	int i;
+
+	for(i = 0; text[i] != '\0'; i++)
+		pointer->registro.Label[i] = text[i];
+	pointer->registro.Label[i] = '\0';
+	
+	pointer->registro.Pc = value;
 }
 
 void remove_Primeiro_elemento(lista_t* lista)
 {
-  apontador_t novo;
-  novo = lista->cabeca->frente;
-  lista->cabeca->frente = novo->frente;
-  if(novo->frente == NULL)lista->ultima = lista->cabeca;
-  free(novo);
+	apontador_t novo;
+
+	novo = lista->cabeca->frente;
+	lista->cabeca->frente = novo->frente;
+
+	if(novo->frente == NULL)
+		lista->ultima = lista->cabeca;
+
+	free(novo);
 }
 
-void grava_elemento(apontador_t apontado, char* text, int value)
+apontador_t procura_elemento(apontador_t pointer, char* text)
 {
-  apontado->registro.Label =  text;
-  apontado->registro.Pc = value;
-  //Outros
-}
+	while(strcmp(text, pointer->registro.Label) != 0)
+		pointer = pointer->frente;
 
-apontador_t procura_elemento(apontador_t apontado, char* text)
-{
-  while(strcmp(text, apontado->registro.Label) != 0){
-    apontado = apontado->frente;
-  }
-  return apontado;
+	return pointer;
 }
 
 bool *binaryConversion(bool *bin, int dec)
@@ -168,7 +177,7 @@ int main(int argc, char* argv[])
 	bool *binary, *datavalue;
 	int pc, i, j, flag, dec;
 	char *line, *token, *value;
-  	lista_t data, labels;
+  	lista_t data, label;
 
 	input = fopen(argv[1], "r");
 	output = fopen(argv[2], "w+r");
@@ -179,7 +188,7 @@ int main(int argc, char* argv[])
 	token = (char*) malloc(50*sizeof(char));
 	value = (char*) malloc(50*sizeof(char));
   	aloca_lista(&data);
-  	aloca_lista(&labels);
+  	aloca_lista(&label);
 
 
 	fprintf(output, "DEPTH = 256;\nWIDTH = 8;\nADDRESS_RADIX = BIN;\nDATA_RADIX = BIN;\nCONTENT\nBEGIN\n\n");
@@ -224,8 +233,8 @@ int main(int argc, char* argv[])
 			if(token[0] == '_') // Identifica um Label
 			{
 				//Salva o label em uma lista de label
-        		adiciona_elemento(&labels, labels.ultima);
-        		grava_elemento(labels.ultima, token, pc);
+        		adiciona_elemento(&label, label.ultima);
+        		grava_elemento(label.ultima, token, pc);
 				printf("Label = %s\n", token);
 				token = strtok(NULL, " \t");
 				goto _instruction;
