@@ -47,7 +47,7 @@ void grava_elemento(apontador_t pointer, char *text, int value)
 	for(i = 0; text[i] != '\0'; i++)
 		pointer->registro.Label[i] = text[i];
 	pointer->registro.Label[i] = '\0';
-	
+
 	pointer->registro.Pc = value;
 }
 
@@ -170,6 +170,81 @@ bool *binaryTwoComplement16bits(bool *comp, int dec)
 	return comp;
 }
 
+void detectaRegistrador(FILE *output, char *token, bool *binary, int pc)
+{
+	int i, dec;
+
+	dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+
+	binaryConversion(binary, dec);
+	for(i = 5; i < 8; i++)
+	{
+		fprintf(output, "%d", binary[i]);
+	}
+	fprintf(output, ";\n");
+
+	pc++;
+	binaryConversion(binary, pc);
+	for(i = 0; i < 8; i++)
+		fprintf(output, "%d", binary[i]);
+	fprintf(output, "  :  ");
+}
+
+void detectaRegistradorSource(FILE *output, char *token, bool *binary)
+{
+	int i, dec;
+
+	dec = (int)(token[1] - '0'); // Transformação de string para inteiro
+
+	binaryConversion(binary, dec);
+	for(i = 5; i < 8; i++)
+	{
+		fprintf(output, "%d", binary[i]);
+	}
+}
+
+void detectaImediatoNegativo(FILE *output, char *token, bool *binary)
+{
+	int i, dec;
+
+	for(i = 0; i < (int)(strlen(token)-1); i++)
+	{
+		token[i] = token[i+1]; //Shifta a string em uma posição à esquerda
+	}
+	token[i] = '\0';
+
+	dec = atoi(token);
+
+	binaryTwoComplement(binary, dec);
+	for(i = 0; i < 8; i++)
+		fprintf(output, "%d", binary[i]);
+	fprintf(output, ";\n");
+}
+
+void detectaImediatoPositivo(FILE *output, char *token, bool *binary)
+{
+	int i, dec;
+
+	dec = atoi(token); // Transformação de string para inteiro
+
+	binaryConversion(binary, dec);
+	for(i = 0; i < 8; i++)
+	{
+		fprintf(output, "%d", binary[i]);
+	}
+	fprintf(output, ";\n");
+}
+
+void printaPc(FILE *output, bool *binary, int pc)
+{
+	int i;
+
+	pc++;
+	binaryConversion(binary, pc);
+	for(i = 0; i < 8; i++)
+		fprintf(output, "%d", binary[i]);
+	fprintf(output, "  :  ");
+}
 
 int main(int argc, char* argv[])
 {
@@ -217,13 +292,13 @@ int main(int argc, char* argv[])
 
 			binaryConversion(binary, pc);
 
-			fseek(output, -13, SEEK_CUR);
+			fseek(output, -13, SEEK_CUR); // Volta ao inicio da linha atual do output
 
 			fprintf(output, "[");
 			for(i = 0; i < 8; i++)
 				fprintf(output, "%d", binary[i]);
 			fprintf(output, "..11111111]  :  00000000;\n");
-			pc = 255;
+			pc = 255; // PC é atualizado para 11111111
 		}
 
 		if(flag == 1)
@@ -264,9 +339,7 @@ int main(int argc, char* argv[])
 					else if(value[0] == '-' && value[1] >= '0' && value[1] <= '9')
 					{
 						for(j = 0; j < (int)(strlen(value)-1); j++)
-						{
 							value[j] = value[j+1]; //Shifta a string em uma posição à esquerda
-						}
 						value[j] = '\0';
 						dec = atoi(value);
 						binaryTwoComplement16bits(datavalue, dec);
@@ -276,11 +349,7 @@ int main(int argc, char* argv[])
 						fprintf(output, "%d", datavalue[j]);
 					fprintf(output, ";\n");
 
-					pc++;
-					binaryConversion(binary, pc);
-					for(i = 0; i < 8; i++)
-						fprintf(output, "%d", binary[i]);
-					fprintf(output, "  :  ");
+					printaPc(output, binary, pc);
 
 					for(i = 8; i < 16; i++)
 						fprintf(output, "%d", datavalue[i]);
@@ -297,11 +366,7 @@ int main(int argc, char* argv[])
 				if(strcmp(token, "exit") == 0)
 				{
 					fprintf(output, "00000000;\n");
-					pc++;
-					binaryConversion(binary, pc);
-					for(j = 0; j < 8; j++)
-						fprintf(output, "%d", binary[j]);
-					fprintf(output, "  :  ");
+					printaPc(output, binary, pc);
 					fprintf(output, "00000000;\n");
 				}
 
@@ -312,20 +377,7 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
@@ -333,29 +385,10 @@ int main(int argc, char* argv[])
 						fprintf(output, "11111110;\n");
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 					/*
 					else // É qualquer outro tipo de dado (pseudoinstrução .data)
 					{
@@ -370,20 +403,7 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
@@ -391,29 +411,10 @@ int main(int argc, char* argv[])
 						fprintf(output, "11111110;\n");
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 					/*
 					else // É qualquer outro tipo de dado (pseudoinstrução .data)
 					{
@@ -428,31 +429,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 
@@ -464,32 +447,14 @@ int main(int argc, char* argv[])
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -501,31 +466,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -537,31 +484,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -588,31 +517,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -624,31 +535,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -660,31 +553,13 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00000;\n");
 					}
 				}
@@ -696,47 +571,15 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
 					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "clear") == 0)
@@ -747,18 +590,10 @@ int main(int argc, char* argv[])
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  00000000;\n");
+						printaPc(output, binary, pc);
+						fprintf(output, "00000000;\n");
 					}
 				}
 
@@ -766,39 +601,16 @@ int main(int argc, char* argv[])
 				{
 					fprintf(output, "01111000;\n");
 
-					pc++;
-					binaryConversion(binary, pc);
-					for(j = 0; j < 8; j++)
-						fprintf(output, "%d", binary[j]);
-					fprintf(output, "  :  ");
+					printaPc(output, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
 
 					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "slt") == 0)
@@ -808,43 +620,18 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+						detectaRegistradorSource(output, token, binary);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-					}
-
-					//Leitura do Registrador
-					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00;\n");
 					}
 				}
@@ -861,20 +648,7 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
@@ -882,29 +656,10 @@ int main(int argc, char* argv[])
 						fprintf(output, "11111110;\n");
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "storeSp") == 0)
@@ -914,20 +669,7 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
@@ -935,118 +677,49 @@ int main(int argc, char* argv[])
 						fprintf(output, "11111110;\n");
 
 					else if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "ret") == 0)
 				{
 					fprintf(output, "10100000;\n");
-
-					pc++;
-					binaryConversion(binary, pc);
-					for(j = 0; j < 8; j++)
-						fprintf(output, "%d", binary[j]);
-					fprintf(output, "  :  00000000;\n");
+					printaPc(output, binary, pc);
+					fprintf(output, "00000000;\n");
 				}
 
 				else if(strcmp(token, "loadRa") == 0)
 				{
 					fprintf(output, "10101000;\n");
 
-					pc++;
-					binaryConversion(binary, pc);
-					for(j = 0; j < 8; j++)
-						fprintf(output, "%d", binary[j]);
-					fprintf(output, "  :  ");
+					printaPc(output, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
 
 					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "storeRa") == 0)
 				{
 					fprintf(output, "10110000;\n");
 
-					pc++;
-					binaryConversion(binary, pc);
-					for(j = 0; j < 8; j++)
-						fprintf(output, "%d", binary[j]);
-					fprintf(output, "  :  ");
+					printaPc(output, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
 
 					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "addi") == 0)
@@ -1056,47 +729,15 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
 
 					//Leitura do imediato
 					token = strtok(NULL, " \t");
 					if(token[0] >= '0' && token[0] <= '9') // É um imediato positivo válido
-					{
-						dec = atoi(token); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 0; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-					}
+						detectaImediatoPositivo(output, token, binary);
 
 					else if(token[0] == '-' && token[1] >= '0' && token[1] <= '9')
-					{
-						for(j = 0; j < (int)(strlen(token)-1); j++)
-						{
-							token[j] = token[j+1]; //Shifta a string em uma posição à esquerda
-						}
-						token[j] = '\0';
-						dec = atoi(token);
-						binaryTwoComplement(binary, dec);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, ";\n");
-					}
+						detectaImediatoNegativo(output, token, binary);
 				}
 
 				else if(strcmp(token, "sgt") == 0)
@@ -1106,43 +747,18 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+						detectaRegistradorSource(output, token, binary);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-					}
-
-					//Leitura do Registrador
-					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00;\n");
 					}
 				}
@@ -1154,43 +770,18 @@ int main(int argc, char* argv[])
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-						fprintf(output, ";\n");
-						pc++;
-						binaryConversion(binary, pc);
-						for(j = 0; j < 8; j++)
-							fprintf(output, "%d", binary[j]);
-						fprintf(output, "  :  ");
-					}
+						detectaRegistrador(output, token, binary, pc);
+
+					//Leitura do Registrador
+					token = strtok(NULL, " \t");
+					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
+						detectaRegistradorSource(output, token, binary);
 
 					//Leitura do Registrador
 					token = strtok(NULL, " \t");
 					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
 					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
-					}
-
-					//Leitura do Registrador
-					token = strtok(NULL, " \t");
-					if(token[1] >= '0' && token[1] <= '7') // É um registrador válido (R0 até R7)
-					{
-						dec = (int)(token[1] - '0'); // Transformação de string para inteiro
-						binaryConversion(binary, dec);
-						for(j = 5; j < 8; j++)
-						{
-							fprintf(output, "%d", binary[j]);
-						}
+						detectaRegistradorSource(output, token, binary);
 						fprintf(output, "00;\n");
 					}
 				}
@@ -1201,7 +792,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-		line[0] = '\0';
+		line[0] = '\0'; // Reseta a posição do line[0] para ser o fim da string, para que possa ser detectado no fim do arquivo de entrada
 		pc++;
 	}
 

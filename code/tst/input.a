@@ -1,3 +1,39 @@
-_label1: loadi R2 16
-_label2: loadi R2 16
+loadi R3 -1
+storei R2 IO
+loadi R0 IO
+storei R7 24
+add R1 R7
+subtract R1 R7
+multiply R1 R7
+divide R1 R7
+move R1 R7
+load R1 R7
+store R1 R7
+slt R1 R7 R5
+ret
+loadRa -1
+loadRa -4
+loadRa 32
+_marcador: loadi R3 -1
+storeRa -1
+storeRa -4
+storeRa 32
+addi R1 3
+addi R1 -1
+sgt R1 R7 R5
+_label: seq R1 R7 R5
+moveSp -1
+moveSp -4
+moveSp 32
+loadSp R1 -1
+loadSp R1 -4
+loadSp R1 32
+storeSp R1 -1
+storeSp R1 -4
+storeSp R1 32
+clear R1
+loadc R1 32
 exit
+negOne: .data 2 -1
+Twice: .data 2 2
+Pow: .data 2 975725574818
