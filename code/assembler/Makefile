@@ -1,7 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O0
-INPUTPATH = ../tst/input.a
-OUTPUTPATH = ../tst/output.mif
+CFLAGS = -Wall -Wextra -g -O3
 
 all: assembler.exe
 
@@ -24,12 +22,3 @@ lista.o: lista.c lista.h binary_converter.h function_assembler.h
 clean:
 	rm *.o assembler.exe
 	@echo "\nThe assembler executable has been sucessfully removed\n"
-
-test:
-	./assembler.exe $(INPUTPATH) $(OUTPUTPATH)
-
-gdb:
-	gdb assembler.exe
-
-compile:
-	make clean && make all

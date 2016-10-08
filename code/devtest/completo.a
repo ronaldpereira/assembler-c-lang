@@ -31,6 +31,8 @@ loadSp R1 32
 storeSp R1 -1
 storeSp R1 -4
 storeSp R1 32
+jump _marcador
+jump _label
 clear R1
 loadc R1 32
 exit

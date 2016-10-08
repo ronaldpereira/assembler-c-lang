@@ -71,6 +71,21 @@ void detectaImediatoPositivo(FILE *output, char *token, bool *binary)
 	fprintf(output, ";\n");
 }
 
+void detectaMarcador(FILE *output, lista_t lista, char *token, bool *binary)
+{
+	int i, pc;
+
+	pc = procura_elemento(lista.cabeca, token);
+
+	binaryConversion(binary, pc);
+
+	for(i = 0; i < 8; i++)
+	{
+		fprintf(output, "%d", binary[i]);
+	}
+	fprintf(output, ";\n");
+}
+
 void printaPc(FILE *output, bool *binary, int pc)
 {
 	int i;

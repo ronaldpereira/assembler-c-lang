@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "lista.h"
+#include "binary_converter.h"
 
 void aloca_lista(lista_t* lista)
 {
@@ -32,23 +33,16 @@ void grava_elemento(apontador_t pointer, char *text, int value)
 	pointer->registro.Pc = value;
 }
 
-void remove_Primeiro_elemento(lista_t* lista)
-{
-	apontador_t novo;
-
-	novo = lista->cabeca->frente;
-	lista->cabeca->frente = novo->frente;
-
-	if(novo->frente == NULL)
-		lista->ultima = lista->cabeca;
-
-	free(novo);
-}
-
-apontador_t procura_elemento(apontador_t pointer, char* text)
+int procura_elemento(apontador_t pointer, char* text)
 {
 	while(strcmp(text, pointer->registro.Label) != 0)
 		pointer = pointer->frente;
 
-	return pointer;
+	return pointer->registro.Pc;
+}
+
+void imprime_lista(apontador_t pointer)
+{
+	while(pointer != NULL)
+		pointer = pointer->frente;
 }

@@ -1,5 +1,6 @@
 #ifndef LISTA
 #define LISTA
+#include <stdbool.h>
 
 typedef struct Address
 {
@@ -24,7 +25,7 @@ typedef struct lista_t
 void aloca_lista(lista_t *list);
 void adiciona_elemento(lista_t *list, apontador_t pointer);
 void grava_elemento(apontador_t pointer, char *text, int value);
-void remove_Primeiro_elemento(lista_t *list);
-apontador_t procura_elemento(apontador_t pointer, char *text);
+int procura_elemento(apontador_t pointer, char* text);
+void imprime_lista(apontador_t pointer);
 
 #endif
