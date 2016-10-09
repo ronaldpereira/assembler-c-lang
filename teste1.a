@@ -1,10 +1,10 @@
-; W2-1.a
-; This program reads three distinct positive values
-; and returns the square of the biggest of the three + 1
+; teste1.a
+; O programa le tres valores positivos distintos
+; retornando o quadrado do maior mais 1
 
-	loadi R0 IO	; read n -> R0 // n de valores
-        loadi R1 IO
-        loadi R2 IO
+	loadi R0 IO	; entrada1
+        loadi R1 IO     ; entrada2
+        loadi R2 IO     ; entrada3
         storei R3 zero
         storei R4 zero
         storei R5 zero
@@ -33,13 +33,14 @@ _pos:	multiply R5 R5
         clear R2
         clear R3
         clear R4
-        storei R5 IO	; pos: output the final sum in R2
-       	exit  		; stop
+        storei R5 IO	; output R5
+       	exit  	
 
-negOne:	.data 2 -1	; negOne: constant -1
-zero:   .data 2 0
-one:	.data 2 1	; constant 1
+negOne:	.data 2 -1	; somente para teste
+zero:   .data 2 0       ; serve para zerar R3-R5
+one:	.data 2 1	; somente para teste
 
+;lista de funcoes utilizadas aqui
 ;loadi
 ;subtract
 ;move
