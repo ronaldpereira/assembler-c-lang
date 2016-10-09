@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O3
+CFLAGS = -Wall -Wextra -g -O0
 
 all: assembler.exe
 
