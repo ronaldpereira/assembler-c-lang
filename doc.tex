@@ -35,10 +35,23 @@ Para resolver o prinicipal problema inerente, a existência de referências futu
 \label{fig:trieExample}
 \end{figure}
 
-O arquivo de entrada é representado acima pelo primeiro nodo e em cima de tal realiza-se a primeira passada por todo arquivo pelo \textit{Assembler}. Nessa passagem somente gera-se uma tabela de referências para a posição de todos os \textit{labels} no código, contando o PC \textit{program counter}, a partir do início do arquivo. Essa tabela é posteriormente utilizada para resolver todas as referências posteriores existentes, realizando assim a segunda passada. Ao final de todo esse processo é gerado o arquivo executável, que pode ser lido diretamente pela máquina.
+O arquivo de entrada é representado acima pelo primeiro nodo e em cima de tal realiza-se a primeira passada por todo arquivo pelo \textit{Assembler}. Nessa passagem somente geram-se duas tabelas de referências, uma para os \textit{.data} e outra para a posição de todos os \textit{labels} no código, contando o PC \textit{program counter}, a partir do início do arquivo. Essa tabela é posteriormente utilizada para resolver todas as referências posteriores existentes, realizando assim a segunda passada. Ao final de todo esse processo é gerado o arquivo executável, que pode ser lido diretamente pela máquina.
 
 \subsection{Implementação das Passagens}
+Na primeira passagem há a criação de duas listas encadeadas, as quais são as duas tabelas de símbolos. Uma dessas tabelas contem todos os \textit{.data}, que serão prontamente substituidos e a outra tabela contem referências para os PC (\textit{program counter}) de labels encontradas na primeira passagem do \textit{Assembler}. Escolheram-se listas encadeadas para a estruturação da Tabela de Símbolos, pois não existem problemas eventuais na procura de elementos da lista em \textit{O(n)}, já que o número de \textit{labels} e \textit{.data} não prejudica severamente a performance do código.
+Depois disso se realiza o processo corriqueiro de decodificação por meio de uma série de \textit{if, else if e else} para a leitura da instrução e a tradução do valores de eventuais registradores para os respectivos valores binários. Após todo esse processo se encontra o arquivo executável gerado.
 
+\section{Casos de Teste}
+
+Dois casos de teste foram formulados para o teste do montador, cada qual procurando demonstrar, testar e utilizar de comandos peculiares da arquitetura da máquina \textit{Wombat2}. 
+
+O primeiro programa realiza a busca do maior de três valores distintos e retorna tal valor ao quadrado acrescido de 1. Esse caso de teste é muito interessante, porque na implementação realizada utilizaram-se vários diferentes tipos de \textit{jump} no mesmo código, a fim de testar se realizava-se a montagem de maneira correta.
+
+O segundo prorama emula muita das caracteristicas do primeiro, mas esse recebe 3 inteiros e retorna a média aritmetica de todos os elementos, sendo que elementos repetidos são contados somente uma vez. Nesse implementação a principal meta foi o teste se instrução como \textit{slt} e \textit{seq}, as quais possuem 3 operandos, realizam corretamente a decodificação.
+
+No total entre os dois arquivos de teste foram testadas 16 instruções das 26 possíveis relativas a máquina \textit{Wombat2}. A codificação destas instruções para línguagem de máquina foi sucedida e externou o êxito do \textit{Assembler} aqui criado.
+
+\subsection{}
 
 \bibliographystyle{plain}
 \bibliography{references}
