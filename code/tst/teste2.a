@@ -10,7 +10,6 @@
 ;slt
 ;call
 
-end: storei R4 IO
         loadi R0 IO
         loadi R1 IO
         loadi R2 IO
@@ -25,7 +24,7 @@ _Start: seq R3 R0 R1
         jmpp R3 _R0iR2
         seq R3 R1 R2
         jmpp R3 _R1iR2
-        call end
+        call all
 _R0iR2: slt R4 R0 R1
         sgt R3 R0 R1
         jmpp R4 _2R1
@@ -70,6 +69,7 @@ all: add R4 R2
         add R4 R0
         divide R4 R5
         call end
+end: storei R4 IO
         exit
 
 
