@@ -1,0 +1,53 @@
+; W2-1.a
+; This program reads three distinct positive values
+; and returns the square of the biggest of the three + 1
+
+	loadi R0 IO	; read n -> R0 // n de valores
+        loadi R1 IO
+        loadi R2 IO
+        storei R3 zero
+        storei R4 zero
+        storei R5 zero
+_Start:	subtract R4 R0
+        add R4 R1
+        jmpp R4 _R1sR0
+        jmpn R4 _R0sR1
+_R0sR1: subtract R3 R0
+        add R3 R2
+       	jmpp  R3 _R2s 
+        jmpn R3 _R0s
+_R1sR0: subtract R3 R1
+        add R3 R2
+        jmpp R3 _R2s
+        jmpn R3 _R1s
+_R0s:   move R5 R0
+        jump _pos
+_R1s:   move R5 R1
+        jump _pos 
+_R2s:   move R5 R2
+        jump _pos
+_pos:	multiply R5 R5
+        addi R5 1
+        clear R0
+        clear R1
+        clear R2
+        clear R3
+        clear R4
+        storei R5 IO	; pos: output the final sum in R2
+       	exit  		; stop
+
+negOne:	.data 2 -1	; negOne: constant -1
+zero:   .data 2 0
+one:	.data 2 1	; constant 1
+
+;loadi
+;subtract
+;move
+;jump
+;jmpp
+;jmpn
+;storei
+;exit
+;multiply
+;clear
+;addi
