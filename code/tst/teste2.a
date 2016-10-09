@@ -1,6 +1,6 @@
 ; realiza funcoes logicas basicas
 ; realiza a soma de 3 valores dado que nao ha repeticao
-;se repeta conta somente uma vez um valor e retorna a media 
+;se repeta conta somente uma vez um valor e retorna a media
 
         loadi R0 IO
         loadi R1 IO
@@ -54,6 +54,7 @@ _end: storei R4 IO
 negOne: .data 2 -1
 zero: .data 2 0
 
+;lista de funcoes utilizadas aqui
 ;loadc
 ;seq
 ;divide
