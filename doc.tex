@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Trabalho Prático 0 \\ Software Básico
+\\ Assembler Simples}
+\author{João Paulo Martino Bregunci - jpbregunci@gmail.com
+\\ Ronald Pereira - ???}
+\date{Outubro de 2016}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introdução}
+A tradução de cógido \textit{Assembly} para código de máquina é um dos problemas mais antigos da Ciência da Computação, dada a obvia dificuldade da programação diretamente em código de máquina. Desse problema, iniciou-se a proposta desse trabalho que será a construção de um \textit{Assembler} simples, o qual é capaz de gerar código executavel para a máquina \textit{Wombat2}. Este dado assembler em questão criado possui uma esquemática classica de \textit{2 passadas}, a fim de resolver qualquer tipo de referência posterior em instruções de desvio.
+Ao final de todo o processo, cria-se um novo arquivo executável de saída que possa ser diretamente executado pela máquina. Vale ressaltar que todas as instruções de máquina possuem, nesta implementação, uma paridade com cada \textit{pseudo-instrução} de máquina.
+
+
+\section{Explanação do Problema}
+\subsection{Apresentação do Problema}
+Como enunciado anteriormente na Introdução, o problema consiste na implementação de \textit{Assembler} simples. Sendo o maior problema relevante a tal a existência de referências futuras, ou seja, saltos na memória de instrução, cujo endereço ainda é desconheccido.
+
+\subsection{Solução Generalizada do Problema}
+Para resolver o prinicipal problema inerente, a existência de referências futuras, optou-se pela implementação de um \textit{Assembler de 2 passadas}, utilizando para tal uma \textit{Tabela de símbolos}, na qual armazena-se o endereço relativo de todos os procedimentos existentes no código, a fim de, na segunda passada, resolver tais referências futuras. A imagem a seguir auxília na compreensão do \textit{Assembler}:
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{tp-1--1.png}
+\caption{Fluxograma com os passos do \textit{Assembler}}
+\label{fig:trieExample}
+\end{figure}
+
+O arquivo de entrada é representado acima pelo primeiro nodo e em cima de tal realiza-se a primeira passada por todo arquivo pelo \textit{Assembler}. Nessa passagem somente gera-se uma tabela de referências para a posição de todos os \textit{labels} no código, contando o PC \textit{program counter}, a partir do início do arquivo. Essa tabela é posteriormente utilizada para resolver todas as referências posteriores existentes, realizando assim a segunda passada. Ao final de todo esse processo é gerado o arquivo executável, que pode ser lido diretamente pela máquina.
+
+\subsection{Implementação das Passagens}
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
