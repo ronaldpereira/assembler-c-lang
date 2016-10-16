@@ -469,10 +469,10 @@ int main(int argc, char* argv[])
 				else if(strcmp(token, "call") == 0) // Precisa de label do tipo data
 				{
 					fprintf(output, "10001000;\n");
-					imprime_lista(data.cabeca);
+					// imprime_lista(label.cabeca);
 					token = strtok(NULL, " \t");
 					printaPc(output, binary, pc);
-					detectaMarcador(output, data, token, binary);
+					detectaMarcador(output, label, token, binary);
 				}
 
 				else if(strcmp(token, "loadSp") == 0)
