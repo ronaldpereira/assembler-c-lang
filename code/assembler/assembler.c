@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 		{
 			flag = 1;
 
-			if(line[i] != ';')
+			if(line[0] != ';')
 				break;
 		}
 
@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
 		while(fscanf(input, "%[^\n]\n", line) != EOF) // Lê a linha atual e detecta se a linha começa com um comentário ';'
 		{
 			flag = 1;
-			
-			if(line[i] != ';')
+
+			if(line[0] != ';')
 				break;
 		}
 
