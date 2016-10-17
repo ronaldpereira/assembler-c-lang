@@ -4,6 +4,6 @@ Esse programa possui alguma regras que DEVEM ser respeitadas ao estruturar um ar
 
 2- Não devem haver nenhuma linha escrita no fim do programa (após os .datas)
 
-3- Não devem haver nenhum rótulo (label) no meio do programa Assembly que não esteja declarado em outro local do códetectaImediatoNegativo
+3- Não devem haver nenhum rótulo (label) no meio do programa Assembly que não esteja declarado em outro local do código
 
-4- Labels devem começar com um underline "_"
+4- Labels devem começar com um underline "_", tanto para jumps ou calls

@@ -16,9 +16,9 @@
 ;addi
 ;add
 
-	loadi R0 IO	; entrada1
-        loadi R1 IO     ; entrada2
-        loadi R2 IO     ; entrada3
+	    loadi R0 IO	; entrada1
+        loadi R1 IO ; entrada2
+        loadi R2 IO ; entrada3
         storei R3 zero
         storei R4 zero
         storei R5 zero

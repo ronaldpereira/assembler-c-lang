@@ -24,52 +24,52 @@ _Start: seq R3 R0 R1
         jmpp R3 _R0iR2
         seq R3 R1 R2
         jmpp R3 _R1iR2
-        call all
+        call _all
 _R0iR2: slt R4 R0 R1
         sgt R3 R0 R1
         jmpp R4 _2R1
         jmpp R3 _2R1
         clear R4
         add R4 R0
-        call end
+        call _end
 _R0iR1: slt R4 R0 R2
         sgt R3 R0 R2
         jmpp R4 _2R2
         jmpp R3 _2R2
         clear R4
         add R4 R0
-        call end
+        call _end
 _R1iR2: slt R4 R1 R0
         sgt R3 R1 R0
         jmpp R4 _2R0
         jmpp R3 _2R0
         clear R4
         add R4 R0
-        call end
+        call _end
 _2R2: clear R4
         add R4 R2
         add R4 R1
         addi R5 -1
         divide R4 R5
-        call end
+        call _end
 _2R1: clear R4
         add R4 R1
         add R4 R2
         addi R5 -1
         divide R4 R5
-        call end
+        call _end
 _2R0: clear R4
         add R4 R0
         add R4 R1
         addi R5 -1
         divide R4 R5
-        call end
-all: add R4 R2
+        call _end
+_all: add R4 R2
         add R4 R1
         add R4 R0
         divide R4 R5
-        call end
-end: storei R4 IO
+        call _end
+_end: storei R4 IO
         exit
 
 
